@@ -1,7 +1,8 @@
-package com.project.EzyWallet.TransactionService.configuration;
+package com.project.EzyWallet.WalletService.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.EzyWallet.TransactionService.service.JwtService;
+import com.project.EzyWallet.WalletService.Entity.User;
+import com.project.EzyWallet.WalletService.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +19,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.project.EzyWallet.TransactionService.entity.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,10 +33,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     UserDetailsService userDetailsService;
 
+    private final RequestMatcher loginRequestMatcher = new AntPathRequestMatcher("/login");
+    private final RequestMatcher registerRequestMatcher = new AntPathRequestMatcher("/register");
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-
+        if(this.loginRequestMatcher.matches(request) || this.registerRequestMatcher.matches(request)){
+            filterChain.doFilter(request, response);
+            return ;
+        }
 
         try {
             String authToken = request.getHeader("Authorization");

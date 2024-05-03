@@ -32,51 +32,49 @@ public class TransactionService {
     MailSenderService mailSender;
 
 
-    public TransactionStatus initiateTransaction(InitiateTransactionRequestModel request) throws TransactionFailureException {
-        String sender =( (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone();
+    public TransactionStatus initiateTransaction(InitiateTransactionRequestModel request) throws Exception {
+        String sender = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone();
         String receiver = request.getReceiver();
         double amount = request.getAmount();
         String purpose = request.getPurpose();
 
+
         ResponseEntity<Map<String, Object>> response = walletService.updateBalance(WalletBalanceUpdateReauestModel.builder()
-                        .sender(sender)
-                                .receiver(receiver)
-                                        .amount(amount)
-                                                .build());
-        Map<String, Object> map = response.getBody();
+                    .sender(sender)
+                    .receiver(receiver)
+                    .amount(amount)
+                    .build());
 
-        Transaction transaction = Transaction.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .amount(amount)
-                .purpose(purpose)
-                .status((map.get("status")==(Integer)0)?TransactionStatus.FAILED:TransactionStatus.SUCCESS)
-                .build();
+            Map<String, Object> map = response.getBody();
+            Transaction transaction = Transaction.builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .amount(amount)
+                    .purpose(purpose)
+                    .status((map.get("status") == (Integer) 0) ? TransactionStatus.FAILED : TransactionStatus.SUCCESS)
+                    .build();
 
-
-
-
-        if(map.get("status")==(Integer)0){
-            transactionDao.save(transaction);
-            throw new TransactionFailureException((String)map.get("error"));
-        }else{
-            String senderEmail = userService.getEmailFromPhone(sender);
-            Map<String, Object>  mailToSender = new HashMap<>();
-            mailToSender.put("to", senderEmail);
-            mailToSender.put("subject", "Transaction successful.");
-            mailToSender.put("body", "Successfully sent ₹"+amount+" to "+receiver+"'s account.");
-            mailSender.sendMail(Constants.MAIL_SENDER_TOPIC, mailToSender);
+            if (map.get("status") == (Integer) 0) {
+                transactionDao.save(transaction);
+                throw new TransactionFailureException((String) map.get("error"));
+            } else {
+                String senderEmail = userService.getEmailFromPhone(sender);
+                Map<String, Object> mailToSender = new HashMap<>();
+                mailToSender.put("to", senderEmail);
+                mailToSender.put("subject", "EzyWallet: Transaction successful.");
+                mailToSender.put("body", "Successfully sent ₹" + amount + " to " + receiver + "'s account.");
+                mailSender.sendMail(Constants.MAIL_SENDER_TOPIC, mailToSender);
 
 
-            String receiverEmail = userService.getEmailFromPhone(receiver);
-            Map<String, Object>  mailToReceiver = new HashMap<>();
-            mailToReceiver.put("to", receiverEmail);
-            mailToReceiver.put("subject", "Amount received.");
-            mailToReceiver.put("body", "You have successfully received ₹"+amount+" from "+sender+"'s account.");
-            mailSender.sendMail(Constants.MAIL_SENDER_TOPIC, mailToReceiver);
+                String receiverEmail = userService.getEmailFromPhone(receiver);
+                Map<String, Object> mailToReceiver = new HashMap<>();
+                mailToReceiver.put("to", receiverEmail);
+                mailToReceiver.put("subject", "EzyWallet: Amount received.");
+                mailToReceiver.put("body", "You have successfully received ₹" + amount + " from " + sender + "'s account.");
+                mailSender.sendMail(Constants.MAIL_SENDER_TOPIC, mailToReceiver);
 
-            transactionDao.save(transaction);
-            return TransactionStatus.SUCCESS;
-        }
+                transactionDao.save(transaction);
+                return TransactionStatus.SUCCESS;
+            }
     }
 }

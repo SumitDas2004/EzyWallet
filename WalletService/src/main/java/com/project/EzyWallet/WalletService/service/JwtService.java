@@ -1,4 +1,4 @@
-package com.project.EzyWallet.TransactionService.service;
+package com.project.EzyWallet.WalletService.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

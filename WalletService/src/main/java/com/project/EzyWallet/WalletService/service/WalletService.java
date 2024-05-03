@@ -23,8 +23,8 @@ public class WalletService {
     int initialBalance;
 
     @KafkaListener(topics = KafkaTopicNames.USER_WALLET_TOPIC, groupId = "create_wallet_request_consumer_group")
-    public void create(Map<String, Object> request){
-        walletDao.save(Wallet.builder().phone((String)request.get("phone")).balance(initialBalance).build());
+    public void create(String phone){
+        walletDao.save(Wallet.builder().phone(phone).balance(initialBalance).build());
         System.out.println("Wallet creation successful.");
     }
 

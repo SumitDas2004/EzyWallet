@@ -7,7 +7,6 @@ import com.project.EzyWallet.TransactionService.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,17 +18,12 @@ public class TransactionController {
     TransactionService service;
 
     @PostMapping("/initiate")
-    public ResponseEntity<?> initiate(@RequestBody InitiateTransactionRequestModel request) throws TransactionFailureException {
+    public ResponseEntity<?> initiate(@RequestBody InitiateTransactionRequestModel request) throws Exception {
         TransactionStatus status = service.initiateTransaction(request);
             Map<String, Object> map= new HashMap<>();
             map.put("status", 1);
             map.put("message", "Successfully sent ₹"+request.getAmount()+" to "+request.getReceiver());
             return new ResponseEntity<>(map, HttpStatus.OK);
-    }
-
-    @GetMapping("/test")
-    public Object test(){
-        return SecurityContextHolder.getContext().getAuthentication();
     }
 
 
@@ -44,7 +38,7 @@ public class TransactionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?>  internalServerError(Exception e){
-            System.out.println(e.getMessage());
+        System.out.println(e.toString());
             Map<String, Object> map= new HashMap<>();
             map.put("status", 0);
             map.put("message", "Internal server error.");

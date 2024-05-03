@@ -45,9 +45,7 @@ public class UserService {
         user.setLoggedOut(false);
         user = userDao.save(user);
         //Creation map for publishing wallet creation request message in kafka
-        Map<String, Object> map = new HashMap<>();
-        map.put("phone", user.getPhone());
-        kafkaSenderService.send(KafkaTopicNames.USER_WALLET_TOPIC, map);
+        kafkaSenderService.send(KafkaTopicNames.USER_WALLET_TOPIC, user.getPhone());
         return jwtService.generateToken(user.getUsername());
     }
 
