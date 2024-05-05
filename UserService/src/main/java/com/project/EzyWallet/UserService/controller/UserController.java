@@ -1,5 +1,6 @@
 package com.project.EzyWallet.UserService.controller;
 
+import com.project.EzyWallet.UserService.dto.GetUserDetailsDTO;
 import com.project.EzyWallet.UserService.dto.LoginDto;
 import com.project.EzyWallet.UserService.dto.RegistrationDto;
 import com.project.EzyWallet.UserService.entity.User;
@@ -24,6 +25,17 @@ public class UserController {
     @Autowired
     UserService userService;
 
+
+    @GetMapping("/userDetails")
+    public ResponseEntity<?> getUserDetails(){
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getUserFromUsername(username);
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", 1);
+        map.put("data", GetUserDetailsDTO.to(user));
+        map.put("message", "Success");
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationDto request){

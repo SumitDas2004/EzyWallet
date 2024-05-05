@@ -10,6 +10,9 @@ import com.project.EzyWallet.TransactionService.entity.Transaction;
 import com.project.EzyWallet.TransactionService.entity.User;
 import com.project.EzyWallet.TransactionService.exception.TransactionFailureException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,17 @@ public class TransactionService {
         String receiver = request.getReceiver();
         double amount = request.getAmount();
         String purpose = request.getPurpose();
+        if(sender.equals(receiver)){
+            Transaction transaction = Transaction.builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .amount(amount)
+                    .purpose(purpose)
+                    .status(TransactionStatus.FAILED)
+                    .build();
+            transactionDao.save(transaction);
+            throw new TransactionFailureException("Can't send money to self.");
+        }
 
 
         ResponseEntity<Map<String, Object>> response = walletService.updateBalance(WalletBalanceUpdateReauestModel.builder()
@@ -76,5 +90,13 @@ public class TransactionService {
                 transactionDao.save(transaction);
                 return TransactionStatus.SUCCESS;
             }
+    }
+
+    public ResponseEntity<?> findAllUserTransactions(int offset, int size){
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", 1);
+        map.put("message", "success");
+        map.put("data", transactionDao.findTransactionsInvolvingUser(((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone(), PageRequest.of(offset, size).withSort(Sort.Direction.DESC, "createdOn")));
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

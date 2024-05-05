@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,8 +23,9 @@ import java.util.stream.Collectors;
 @Builder
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GenericGenerator(name="UidGenerator", strategy = "com.project.EzyWallet.UserService.configuration.CustomUserIdGenerator")
+    @GeneratedValue(generator = "UidGenerator", strategy = GenerationType.SEQUENCE)
+    private String id;
     @Column(unique = true, nullable = false)
     private String email; //Email is treated as username
     @Column(unique = true, nullable = false)

@@ -26,6 +26,11 @@ public class TransactionController {
             return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
+    @GetMapping("/getTransactions")
+    ResponseEntity<?> getTrnasactionPage(@RequestParam(name="offset") int pageNumber, @RequestParam(name="size") int pageSize){
+        return new ResponseEntity<>(service.findAllUserTransactions(pageNumber, pageSize), HttpStatus.OK);
+    }
+
 
     @ExceptionHandler(TransactionFailureException.class)
     public ResponseEntity<?>  transactionFailureException(TransactionFailureException e){
@@ -44,5 +49,7 @@ public class TransactionController {
             map.put("message", "Internal server error.");
             return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 
 }

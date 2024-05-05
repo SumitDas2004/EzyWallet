@@ -27,6 +27,7 @@ import java.util.Map;
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class JwtFilter extends OncePerRequestFilter {
+
     @Autowired
     JwtService jwtService;
 
@@ -38,6 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        boolean isAuthenticated = false;
         if(this.loginRequestMatcher.matches(request) || this.registerRequestMatcher.matches(request)){
             filterChain.doFilter(request, response);
             return ;
@@ -55,11 +57,12 @@ public class JwtFilter extends OncePerRequestFilter {
                             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());
                             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                            isAuthenticated = true;
                         }
                     }
                 }
             }
-
+            if(!isAuthenticated)throw new Exception("");
             filterChain.doFilter(request, response);
         }catch(Exception e){
             response.setStatus(401);

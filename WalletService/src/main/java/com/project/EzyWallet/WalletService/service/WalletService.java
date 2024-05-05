@@ -1,19 +1,21 @@
 package com.project.EzyWallet.WalletService.service;
 
+import com.project.EzyWallet.WalletService.Entity.User;
 import com.project.EzyWallet.WalletService.Entity.Wallet;
 import com.project.EzyWallet.WalletService.constants.KafkaTopicNames;
 import com.project.EzyWallet.WalletService.dto.WalletBalanceUpdateReauestModel;
 import com.project.EzyWallet.WalletService.exception.InsufficiantBalanceException;
 import com.project.EzyWallet.WalletService.exception.ReceiverWalletDoesNotExistException;
 import com.project.EzyWallet.WalletService.exception.SenderWalletDoesNotExistException;
+import com.project.EzyWallet.WalletService.exception.WalletAlreadyExistsException;
 import com.project.EzyWallet.WalletService.repository.WalletDao;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 @Service
 public class WalletService {
     @Autowired
@@ -23,9 +25,11 @@ public class WalletService {
     int initialBalance;
 
     @KafkaListener(topics = KafkaTopicNames.USER_WALLET_TOPIC, groupId = "create_wallet_request_consumer_group")
-    public void create(String phone){
-        walletDao.save(Wallet.builder().phone(phone).balance(initialBalance).build());
-        System.out.println("Wallet creation successful.");
+    public void create(String phone) throws WalletAlreadyExistsException {
+        if(walletDao.findByPhone(phone)==null) {
+            walletDao.save(Wallet.builder().phone(phone).balance(initialBalance).build());
+            System.out.println("Wallet creation successful.");
+        }else throw new WalletAlreadyExistsException();
     }
 
     @Transactional
@@ -46,5 +50,19 @@ public class WalletService {
 
         walletDao.save(senderWallet);
         walletDao.save(receiverWallet);
+    }
+    public boolean recharge(int amount){
+        try {
+            String user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone();
+            walletDao.recharge(user, amount);
+            return true;
+        }catch(Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    public Wallet getWallet(String phone) {
+        return walletDao.findByPhone(phone);
     }
 }
