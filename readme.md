@@ -18,7 +18,7 @@ Our Digital Wallet Backend Demo Application showcases a simplified yet comprehen
 * __Documentation and Code Structure:__ The project includes clear documentation and well-structured code, facilitating understanding and future development. This feature demonstrates the importance of clean coding practices and documentation in software development.
 ## Tech Stack
 
-**Server:** Spring Boot, Spring Security, JWT, MySQL, Redis, Kafka
+**Server:** Spring Boot, Spring Security, JWT, Spring Data JPA, MySQL, Redis, Kafka, Microservices
 
 
 ## Internal Flow Diagram
