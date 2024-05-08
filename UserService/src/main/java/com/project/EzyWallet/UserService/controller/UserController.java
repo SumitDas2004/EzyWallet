@@ -4,6 +4,7 @@ import com.project.EzyWallet.UserService.dto.GetUserDetailsDTO;
 import com.project.EzyWallet.UserService.dto.LoginDto;
 import com.project.EzyWallet.UserService.dto.RegistrationDto;
 import com.project.EzyWallet.UserService.entity.User;
+import com.project.EzyWallet.UserService.exception.InvalidCredentialsFormatException;
 import com.project.EzyWallet.UserService.exception.UserAlreadyExistsException;
 import com.project.EzyWallet.UserService.service.UserService;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class UserController {
     UserService userService;
 
 
+
     @GetMapping("/userDetails")
     public ResponseEntity<?> getUserDetails(){
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -46,6 +48,11 @@ public class UserController {
             map.put("token", token);
             map.put("message", "User registration successful.");
             return new ResponseEntity<>(map, HttpStatus.OK);
+        }catch (InvalidCredentialsFormatException e){
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", 0);
+            map.put("message", e.getMessage());
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }catch(UserAlreadyExistsException e){
             Map<String, Object> map = new HashMap<>();
             map.put("status", 0);

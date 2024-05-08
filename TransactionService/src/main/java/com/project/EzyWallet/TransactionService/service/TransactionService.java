@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -92,11 +93,8 @@ public class TransactionService {
             }
     }
 
-    public ResponseEntity<?> findAllUserTransactions(int offset, int size){
-        Map<String, Object> map = new HashMap<>();
-        map.put("status", 1);
-        map.put("message", "success");
-        map.put("data", transactionDao.findTransactionsInvolvingUser(((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone(), PageRequest.of(offset, size).withSort(Sort.Direction.DESC, "createdOn")));
-        return new ResponseEntity<>(map, HttpStatus.OK);
+    public List<Transaction> findAllUserTransactions(int offset, int size){
+        List<Transaction> list = transactionDao.findTransactionsInvolvingUser(((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getPhone(), PageRequest.of(offset, size).withSort(Sort.Direction.DESC, "createdOn"));
+        return list;
     }
 }

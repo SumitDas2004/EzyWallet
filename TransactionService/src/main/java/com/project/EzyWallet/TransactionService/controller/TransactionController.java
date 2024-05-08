@@ -28,7 +28,11 @@ public class TransactionController {
 
     @GetMapping("/getTransactions")
     ResponseEntity<?> getTrnasactionPage(@RequestParam(name="offset") int pageNumber, @RequestParam(name="size") int pageSize){
-        return new ResponseEntity<>(service.findAllUserTransactions(pageNumber, pageSize), HttpStatus.OK);
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", 1);
+        map.put("message", "Success.");
+        map.put("data", service.findAllUserTransactions(pageNumber, pageSize));
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
 

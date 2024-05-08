@@ -5,6 +5,7 @@ import com.project.EzyWallet.UserService.dao.UserDao;
 import com.project.EzyWallet.UserService.dto.LoginDto;
 import com.project.EzyWallet.UserService.dto.RegistrationDto;
 import com.project.EzyWallet.UserService.entity.User;
+import com.project.EzyWallet.UserService.exception.InvalidCredentialsFormatException;
 import com.project.EzyWallet.UserService.exception.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,9 +37,13 @@ public class UserService {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public String register(RegistrationDto request) throws UserAlreadyExistsException{
+    public String register(RegistrationDto request) throws UserAlreadyExistsException, InvalidCredentialsFormatException {
         if(existingUser(request.getEmail(), request.getPhone()))
             throw new UserAlreadyExistsException();
+        if(!isValidName(request.getName()))throw new InvalidCredentialsFormatException("Name must have atleast 3 characters");
+        if(!isValidEmail(request.getEmail()))throw new InvalidCredentialsFormatException("Invalid email format.");
+        if(!isValidPassword(request.getPassword()))throw new InvalidCredentialsFormatException("Invalid password format. Password must be at least 8 characters long and should contain at least one uppercase character, one lowercase character, one number and one special character");
+        if(!isValidPhone(request.getPhone()))throw new InvalidCredentialsFormatException("Invalid phone number.");
 
         User user = request.toUser();
         user.setPassword(encoder.encode(user.getPassword()));
@@ -78,5 +83,28 @@ public class UserService {
 
     public User getUserFromUsername(String username) {
         return userDao.findByUsername(username);
+    }
+
+    private boolean isValidEmail(String email) {
+        email = email.trim();
+        String regexPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email.matches(regexPattern);
+    }
+
+    private boolean isValidPassword(String password) {
+        String regexPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        return password.matches(regexPattern);
+    }
+
+    private boolean isValidPhone(String phone) {
+        phone = phone.trim();
+        if(phone.length()<4 || phone.length()>12)return false;
+        for(char c:phone.toCharArray())if(!Character.isDigit(c))return false;
+        return true;
+    }
+
+    private  boolean isValidName(String name){
+        if(name==null)return false;
+        return name.trim().length()>=3;
     }
 }
