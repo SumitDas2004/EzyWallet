@@ -5,17 +5,17 @@ Our Digital Wallet Backend Demo Application showcases a simplified yet comprehen
 
 #### Key Features:
 
-* User Registration and Authentication: Users can register securely and authenticate their identities to access the digital wallet functionalities. This feature demonstrates basic user management and authentication mechanisms.
+* __User Registration and Authentication:__ Users can register securely and authenticate their identities to access the digital wallet functionalities. This feature demonstrates basic user management and authentication mechanisms.
 
-* Digital Wallet Creation: The application allows users to create digital wallets, generating unique wallet addresses for each user. This feature illustrates the process of creating and managing user accounts within the system.
+* __Digital Wallet Creation:__ The application allows users to create digital wallets, generating unique wallet addresses for each user. This feature illustrates the process of creating and managing user accounts within the system.
 
-* Mock Fund Transfer: Users can simulate fund transfers between wallets within the demo environment. While not performing actual transactions, this feature demonstrates the flow of funds between digital wallets.
+* __Mock Fund Transfer:__ Users can simulate fund transfers between wallets within the demo environment. While not performing actual transactions, this feature demonstrates the flow of funds between digital wallets.
 
-* Transaction History: Users can view mock transaction histories to understand how transactions are recorded and displayed within the system. This feature showcases basic transaction management and history tracking capabilities.
+* __Transaction History:__ Users can view mock transaction histories to understand how transactions are recorded and displayed within the system. This feature showcases basic transaction management and history tracking capabilities.
 
-* Simple API Integration: The application provides simple API endpoints for basic functionalities, enabling developers to understand the principles of API integration in backend development.
+* __Simple API Integration:__ The application provides simple API endpoints for basic functionalities, enabling developers to understand the principles of API integration in backend development.
 
-* Documentation and Code Structure: The project includes clear documentation and well-structured code, facilitating understanding and future development. This feature demonstrates the importance of clean coding practices and documentation in software development.
+* __Documentation and Code Structure:__ The project includes clear documentation and well-structured code, facilitating understanding and future development. This feature demonstrates the importance of clean coding practices and documentation in software development.
 ## Tech Stack
 
 **Server:** Spring Boot, Spring Security, JWT, MySQL, Redis, Kafka
